@@ -20,7 +20,14 @@ class MisraGries(object):
         elif len(self.A.keys()) < self.k - 1:
             self.A[item] = 1
         else:
-            self.A = {k : (v - 1) for k, v in self.A.items() if v > 1}
+            keys_to_del = []
+            for key in self.A.keys():
+                self.A[key] -= 1
+                if self.A[key] < 1:
+                    keys_to_del.append(key)
+            for key in keys_to_del:
+                del self.A[key]
+                #self.A = {k : (v - 1) for k, v in self.A.items() if v > 1} #just decrement don't copy
             
 
     def estimate(self, item):

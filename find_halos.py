@@ -39,10 +39,10 @@ def main():
         #else:
         #    freqs[item] = 1
     # Iterate over input sequence file and return a list of labeled points
-    c = 0
+    #c = 0
     for line in seqFile:
-        if c == 1000000:
-            break
+        #if c == 10000:
+            #break
         point = list(map(float,line.strip().strip(";").split(",")))
         label = int(((point[2])//1000)*(250000) + ((point[1])//1000)*(500) + ((point[0])//1000))
         if label in freqs.keys():
@@ -51,9 +51,9 @@ def main():
             freqs[label] = 1
         mg.process(int(label))
         cs.process(int(label))
-        c+=1
+        #c+=1
     print("brute")
-    for pair in sorted(freqs.items(), key=lambda x: x[1])[:10]:
+    for pair in sorted(freqs.items(), key=lambda x: x[1]):
         print(pair)
     print("mg")
     for pair in sorted(mg.most_frequent_items().items(), key=lambda x: x[1]):

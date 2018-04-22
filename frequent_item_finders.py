@@ -6,6 +6,7 @@ sys.path.insert(0, '~/Documents/halo_finder_research/PyHashFamily/')
 from PyHashFamily.HashFamily import HashFamily
 import random
 import statistics
+from priority_dict import priority_dict
 
 class MisraGries(object):
     def __init__(self, k):
@@ -15,6 +16,7 @@ class MisraGries(object):
 
     def process(self, item):
         self.total_viewed += 1
+        #new implementation with priority dict
         if item in self.A.keys():
             self.A[item] += 1
         elif len(self.A.keys()) < self.k - 1:
@@ -57,12 +59,15 @@ class CountSketch(object):
         self.count_sketch = [[0 for i in range(self.b)] for j in range(self.t)]
 
     def add(self, item):
+        est_list = []
         for i in range(self.t):
             c = 1
             if self.s_hashes.evalFunction(item, i) == 0:
                 c = -1
             idx = self.h_hashes.evalFunction(item,i)
             self.count_sketch[i][idx] += c
+            est_list.append((self.count_sketch[i][idx]) * c)
+        return statistics.median(est_list)
     
     def estimate(self, item):
         est_list = []
@@ -76,14 +81,14 @@ class CountSketch(object):
         return statistics.median(est_list) 
 
     def process(self, item):
-        self.add(item)
+        est = self.add(item)
         if item in self.A.keys():
             self.A[item] += 1
         elif len(self.A.keys()) < self.k:
-            self.A[item] = self.estimate(item)
+            self.A[item] = est #self.estimate(item)
         else:
-            est = self.estimate(item)
-            min_freq_item = min(self.A, key=self.A.get)#min(self.A.items(), key=lambda x: x[1])[0]
+            #est = self.estimate(item)
+            min_freq_item = min(self.A.items(), key=lambda x: x[1])[0]#min(self.A, key=self.A.get)
             if est > self.A[min_freq_item]:
                 del self.A[min_freq_item]
                 self.A[item] = est

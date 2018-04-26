@@ -7,6 +7,7 @@ from PyHashFamily.HashFamily import HashFamily
 import random
 import statistics
 from priority_dict import priority_dict
+from heapq import heapify, heappush, heappop
 
 class MisraGries(object):
     def __init__(self, k):
@@ -48,7 +49,7 @@ class CountSketch(object):
     # t hash function (s1, ... , st) from {-1, 1}
     # t x b array of counters (count sketch), interpreted as an array of t hash tables, each containing b buckets
     def __init__(self, k, t, b):
-        self.A = {} # heap of top k elemenets so far 
+        self.A = priority_dict() # heap of top k elemenets so far 
         self.k = k
         self.t = t
         self.b = b
@@ -88,9 +89,10 @@ class CountSketch(object):
             self.A[item] = est #self.estimate(item)
         else:
             #est = self.estimate(item)
-            min_freq_item = min(self.A.items(), key=lambda x: x[1])[0]#min(self.A, key=self.A.get)
-            if est > self.A[min_freq_item]:
-                del self.A[min_freq_item]
+           # min_freq_item = min(self.A.items(), key=lambda x: x[1])[0]#min(self.A, key=self.A.get)
+            if est > self.A.smallest():#self.A[min_freq_item]
+                #del self.A[min_freq_item]
+                self.A.pop_smallest()
                 self.A[item] = est
 
     def most_frequent_items(self):

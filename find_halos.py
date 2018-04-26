@@ -2,7 +2,7 @@ import frequent_item_finders
 import sys
 # Find halos using frequency finders,
 # Brute force, Misa Gries, and Count Sketch impemented
-k = 1000
+
 #k = 10
 t = 28 # approximately log(n/0.05) This is equivalent to r in halo finder paper 
 #t = 24
@@ -26,13 +26,14 @@ b = 1000000 # equivalent to t in halo finder paper
 
 def main():
     seqFile = open(sys.argv[1], "r")
+    k = 900
     #Skip over 8 header lines    
     for _ in range(8):
         seqFile.readline()
     pos = seqFile.tell()
-    for i in range(90):  # up to k of 10000
+    for i in range(91):  # up to k of 10000
         seqFile.seek(pos)
-        k = k + 100 
+        k += 100 
 
     
         mg = frequent_item_finders.MisraGries(k)

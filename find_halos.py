@@ -19,21 +19,21 @@ b = 1000000 # equivalent to t in halo finder paper
 #  i.e. label = (z//1000)(250000) + (y//1000)(500) + (x//1000)
 # It should then be that (z//1000) = label // 250000
 #                        (y//1000) = (label % 250000) // 500 
-#                        (x//1000) = label %% 500
+#                        (x//1000) = label % 500
 
 
 
 
 def main():
     seqFile = open(sys.argv[1], "r")
-    k = 900
+    k = 0
     #Skip over 8 header lines    
     for _ in range(8):
         seqFile.readline()
     pos = seqFile.tell()
-    for i in range(91):  # up to k of 10000
+    for i in range(10):  # up to k of 10000
         seqFile.seek(pos)
-        k += 100 
+        k += 10000  
 
     
         mg = frequent_item_finders.MisraGries(k)

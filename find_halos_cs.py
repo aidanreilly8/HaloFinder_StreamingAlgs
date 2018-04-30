@@ -48,7 +48,7 @@ def main():
 
             print('k = {}'.format(k))
             for pair in sorted(cs.most_frequent_items().items(), key=lambda x: x[1]):
-            outfile.write(str(pair)[1:-1] + '\n')
+                outfile.write(str(pair)[1:-1] + '\n')
 
 if __name__ == "__main__":
     main()

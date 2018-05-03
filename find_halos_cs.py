@@ -32,6 +32,7 @@ def main():
         seqFile.readline()
     pos = seqFile.tell()    
     for q in range(3):
+        b = 2
         t += 10
         outname = "CS_t" + str(t) + ".txt"
         outfile = open(outname, "w")

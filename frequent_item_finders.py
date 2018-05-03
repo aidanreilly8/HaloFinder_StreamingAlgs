@@ -90,7 +90,7 @@ class CountSketch(object):
         else:
             #est = self.estimate(item)
            # min_freq_item = min(self.A.items(), key=lambda x: x[1])[0]#min(self.A, key=self.A.get)
-            if est > self.A.smallest():#self.A[min_freq_item]
+            if est > self.A[self.A.smallest()]:#self.A[min_freq_item]
                 #del self.A[min_freq_item]
                 self.A.pop_smallest()
                 self.A[item] = est

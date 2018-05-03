@@ -46,7 +46,7 @@ def main():
                 label = int(((point[2])//1000)*(250000) + ((point[1])//1000)*(500) + ((point[0])//1000))
                 cs.process(int(label))
 
-            outfile.write('k = {}'.format(k) + '\n')
+            outfile.write('b = {}'.format(b) + '\n')
             for pair in sorted(cs.most_frequent_items().items(), key=lambda x: x[1]):
                 outfile.write(str(pair)[1:-1] + '\n')
 

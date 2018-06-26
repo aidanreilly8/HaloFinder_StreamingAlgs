@@ -26,14 +26,14 @@ b = 1000000 # equivalent to t in halo finder paper
 
 def main():
     seqFile = open(sys.argv[1], "r")
-    k = 0
+    k = 1
     #Skip over 8 header lines    
     for _ in range(8):
         seqFile.readline()
     pos = seqFile.tell()
-    for i in range(10):  # up to k of 10000
+    for i in range(10):  # up to k of 10,000,000,000
         seqFile.seek(pos)
-        k += 10000  
+        k *= 10 
 
     
         mg = frequent_item_finders.MisraGries(k)
@@ -61,9 +61,11 @@ def main():
         for pair in sorted(freqs.items(), key=lambda x: x[1]):
             print(pair)
         """
-        print('k = {}'.format(k))
+        outfile = open("MG_10bil.txt",, "w")
+        outfile.write('k = {}'.format(k) + '\n')
         for pair in sorted(mg.most_frequent_items().items(), key=lambda x: x[1]):
-           print(str(pair)[1:-1])
+            outfile.write(str(pair)[1:-1], '\n')
+        outfile.close()
         """
         print("cs")
         for pair in sorted(cs.most_frequent_items().items(), key=lambda x: x[1]):

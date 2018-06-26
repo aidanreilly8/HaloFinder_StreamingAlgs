@@ -61,7 +61,7 @@ def main():
         for pair in sorted(freqs.items(), key=lambda x: x[1]):
             print(pair)
         """
-        outfile = open("MG_10bil.txt",, "w")
+        outfile = open("MG_10bil.txt", "w")
         outfile.write('k = {}'.format(k) + '\n')
         for pair in sorted(mg.most_frequent_items().items(), key=lambda x: x[1]):
             outfile.write(str(pair)[1:-1], '\n')

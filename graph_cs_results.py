@@ -23,33 +23,36 @@ for line in list(open("true_freqs.txt")):
         break
     data = line.strip().split(',')
     true_items.add(data[0])
+    if c < 11:
+        print(data[0])
     true_counts[data[0]] = data[1]
     c+=1
 
 
-k_vals = []
+b_vals = []
 recall_points = []
 false_pos_points = []
 c = 0
-mg_items = set()
-for line in reversed(list(open("MG_100000.txt"))):
-    if line[0] == 'k':
+cs_items = set()
+b = 2
+for line in reversed(list(open("CS_t30.txt"))):
+    if line[0] == 'b':
         c = 0
-        k = int(line.strip()[4:])
-        recall = len(mg_items.intersection(true_items))/float(1000)
-        false_pos = len(mg_items.difference(true_items))/float(1000)
+        b = int(line.strip()[4:])
+        recall = len(cs_items.intersection(true_items))/10
+        false_pos = len(cs_items.difference(true_items))/10
         recall_points.append(float(recall))
         false_pos_points.append(float(false_pos))
-        k_vals.append(k)
-        mg_items.clear()
+        b_vals.append(b)
+        cs_items.clear()
     elif c < 1000:
         data = line.strip().split(',')
-        mg_items.add(data[0])
+        cs_items.add(data[0])
         c+=1
 
 
-plt.plot(k_vals, recall_points, 'g')
-plt.plot(k_vals, false_pos_points, 'r')
+plt.plot(b_vals, recall_points, 'g')
+plt.plot(b_vals, false_pos_points, 'r')
 ax = plt.gca()
 ax.set_xlim(left=0)
 ax.set_ylim(bottom=0)
@@ -59,9 +62,9 @@ ax.spines['bottom'].set_position(('data',0))
         #     xy=(x, plot_array[x]), xycoords='data',
         #     xytext=(+100, +60), textcoords='offset points', fontsize=32,
         #     arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
-ax.set_title('True top item recall', fontsize=60)
-ax.set_xlabel('heap size', fontsize=40)
-ax.set_ylabel('recall percentage green, false positive percentage red', fontsize=20)
+ax.set_title('True top item recall (t=10)', fontsize=60)
+ax.set_xlabel('b size', fontsize=40)
+ax.set_ylabel('recall percentage', fontsize=40)
 #plt.ylim(-(max_diff + 5), max_diff + 5)
 plt.show()
 """

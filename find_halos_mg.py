@@ -63,7 +63,7 @@ def main():
             print(pair)
         """
         outfile.write('k = {}'.format(k) + '\n')
-        for pair in sorted(mg.most_frequent_items().items(), key=lambda x: x[1]).reverse():
+        for pair in reversed(sorted(mg.most_frequent_items().items(), key=lambda x: x[1])):
             outfile.write(str(pair)[1:-1] + '\n')
         
         """
@@ -72,7 +72,7 @@ def main():
            print(pair)
       """
     outfile.close()
-    
+
 if __name__ == "__main__":
     main()
 

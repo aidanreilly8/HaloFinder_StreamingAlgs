@@ -27,14 +27,14 @@ b = 1000000 # equivalent to t in halo finder paper
 def main():
     seqFile = open(sys.argv[1], "r")
     outfile = open("MG_processed.txt", "w")
-    k = 100000
+    k = 10000
     #Skip over 8 header lines    
     for _ in range(8):
         seqFile.readline()
     pos = seqFile.tell()
     for i in range(100):  
         seqFile.seek(pos)
-        k += 100
+        k *= 2
 
     
         mg = frequent_item_finders.MisraGries(k)

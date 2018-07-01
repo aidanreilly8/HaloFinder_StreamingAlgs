@@ -27,7 +27,7 @@ b = 1000000 # equivalent to t in halo finder paper
 def main():
     seqFile = open(sys.argv[1], "r")
     outfile = open("MG_processed.txt", "w")
-    k = 1000
+    k = 100000
     #Skip over 8 header lines    
     for _ in range(8):
         seqFile.readline()

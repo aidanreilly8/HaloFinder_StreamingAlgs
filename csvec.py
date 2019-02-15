@@ -10,7 +10,7 @@ cache = {}
 
 class CSVec(object):
     """ Simple Count Sketched Vector """
-    def __init__(self, d, c, r, doInitialize=True):
+    def __init__(self, c, r, doInitialize=True):
         global cache
 
         self.r = r # num of rows

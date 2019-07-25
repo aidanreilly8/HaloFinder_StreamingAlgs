@@ -15,7 +15,8 @@ class hh:
         c = 10**3; r = 5; k = 100000
 
         """
-        Initializes an exact heavy hitter finding object. 
+        Initializes an exact heavy hitter finding object. It takes a number 3,
+        4, or 5 corresponding to velocity directions x, y, or z.
         """
         def __init__(self,p):
                 self.reader = br.binreader()

@@ -79,5 +79,6 @@ class CSVec(object):
         # take the median over rows in the sketch
         return vals.median(dim=0)[0]
 
+    """Return the current top k items of count sketch"""
     def getTopk(self):
         return self.topk

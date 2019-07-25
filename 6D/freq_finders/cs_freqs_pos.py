@@ -15,7 +15,7 @@ class hh:
         c = 10**3; r = 5; k = 100000
 
         """
-        Initializes an exact heavy hitter finding object. 
+        Initializes an exact heavy hitter finding object. Takes no arguments. 
         """
         def __init__(self):
                 self.reader = br.binreader()
@@ -25,7 +25,9 @@ class hh:
 
         """
         Iterates through all particle information and gets counts for every
-        single cell 
+        single cell. This method takes no arguments and returns nothing, but
+        it populates the member variable self.cs which is a Count Sketch
+        object. 
         """
         def count(self):
             num_parts = 10**7

@@ -2,6 +2,7 @@ import math
 import numpy as np
 import copy
 import torch
+import sys
 
 LARGEPRIME = 2**61-1
 """
@@ -30,25 +31,47 @@ class CSVec(object):
                                  self.hashes[:,2:3], self.hashes[:,3:4],\
                                  self.hashes[:,4:5], self.hashes[:,5:6]
         
-        vals = torch.zeros(self.r, vec.size()[0],dtype=torch.int64, device=self.device)#
+        vals = torch.zeros(self.r, dtype=torch.int64, device=self.device)#
         coords = torch.tensor(vec)
-        for r in range(self.r):
-            buckets = (vec.mul_(h1[r]).add_(h2[r]) % LARGEPRIME % self.c)
-            signs = ((vec.mul_(h3[r]).add_(h4[r]).mul_(vec).add_(h5[r])\
-                      .mul_(vec).add_(h6[r])) % LARGEPRIME % 2).float().mul_(2).add_(-1)
-            self.table[r,:] += torch.bincount(input=buckets,
-                                              weights=signs,
-                                              minlength=self.c)
+        buckets = torch.zeros(self.r, vec.size()[0], dtype=torch.int64,
+                               device=self.device)
+        signs = torch.zeros(self.r, vec.size()[0], device=self.device)
 
+        for r in range(self.r):
+            buckets[r] = (vec.mul_(h1[r]).add_(h2[r]) % LARGEPRIME % self.c)
+            signs[r] = ((vec.mul_(h3[r]).add_(h4[r]).mul_(vec).add_(h5[r])\
+                      .mul_(vec).add_(h6[r])) % LARGEPRIME % 2).float().mul_(2).add_(-1)
+            #self.table[r,:] += torch.bincount(input=buckets,
+            #                                  weights=signs,
+            #                                  minlength=self.c)
+       
+        for i in range(vec.size()[0]):
+            for r in range(self.r):
+                self.table[r, buckets[r,i]] += signs[r,i]
+                vals[r] = self.table[r, buckets[r,i]]* signs[r,i]
+            in_topk = (self.topk[:,1]==coords[i]).nonzero()
+            if len(in_topk) > 0:
+                # increment in heap if there
+                self.topk[in_topk[0,0],0] += 1
+            else:
+                est = vals.median()
+                cutoff = torch.argmin(self.topk[:,0])
+                if (est > self.topk[cutoff, 0]):
+                    #if estimate is larger than smalles in heap, add to heap
+                    self.topk[cutoff,0] = est
+                    self.topk[cutoff,1] = coords[i]
+    
+
+    ''' # old stuff
             vals[r] = self.table[r, buckets] * signs
 
-        vals = vals.median(dim=0)[0]# this is their estimatesi
+        vals = vals.median(dim=0)[0]# this is their estimates
         vals = torch.stack((vals, coords), dim=1)
-        print(self.topk)
+        #print(self.topk)
         for val in vals:#
             in_heap = False
             for el in self.topk:
-                if el[1] == val[1]:
+                if el[1] == val[1] and :
                     #update existing value
                     #might double count if a lot of the same id are next to
                     #eachother but this should be the same for everything 
@@ -57,10 +80,11 @@ class CSVec(object):
                     break
             cutoff = torch.argmin(self.topk[:,0])
             if ((not in_heap) and val[0] > self.topk[cutoff][0]):
+
                     self.topk[cutoff] = val
                     
-            #self.topk = torch.sort(self.topk, 0, descending=True)[0]
-
+          #self.topk = torch.sort(self.topk, 0, descending=True)[0] 
+    '''
                            
     """Given a vector of items coords, estimate their values based on the Count
     Sketch data structure"""    
@@ -82,3 +106,5 @@ class CSVec(object):
     """Return the current top k items of count sketch"""
     def getTopk(self):
         return self.topk
+
+

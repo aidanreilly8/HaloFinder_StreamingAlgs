@@ -12,16 +12,19 @@ from csvec import *
 class hh:
         box_size = 500      
         vel_size = 20
-        c = 10**3; r = 5; k = 100000
 
         """
         Initializes an exact heavy hitter finding object. Takes no arguments. 
         """
-        def __init__(self):
+        def __init__(self, d, c, r, k):
                 self.reader = br.binreader()
                 self.cs = CSVec(d, c, r, k)
                 self.data = None
                 self.device = 'cuda'
+                self.d = d
+                self.c = c
+                self.r = r
+                self.k = k
 
         """
         Iterates through all particle information and gets counts for every
@@ -30,7 +33,7 @@ class hh:
         object. 
         """
         def count(self):
-            num_parts = 10**7
+            num_parts = d
             self.data = self.reader.process(num_parts)
             while (len(self.data) > 0):
                 args0 = torch.tensor(np.array([self.data[i*6] for i in\
@@ -58,7 +61,8 @@ class hh:
                       
  
 if __name__ == "__main__":
-        hh1 = exact_hh()
+        d = 10**7; c = 10**3; r = 5; k = 100000
+        hh1 = hh(d,c,r,k)
         hh1.count()
         out = open("/srv/scratch1/millennium/exact_cells/cs_pos_20bin", "w")
         for cell in hh1.cs.getTopk():

@@ -12,25 +12,28 @@ from csvec import *
 class hh:
         box_size = 500      
         vel_size = 20
-        c = 10**3; r = 5; k = 100000
 
         """
         Initializes an exact heavy hitter finding object. It takes a number 3,
         4, or 5 corresponding to velocity directions x, y, or z.
         """
-        def __init__(self,p):
+        def __init__(self,p,d,c,r,k):
                 self.reader = br.binreader()
                 self.cs = CSVec(d, c, r, k)
                 self.data = None
                 self.device = 'cuda'
                 self.p = p
+                self.d = d
+                self.c = c
+                self.r = r
+                self.k = k
 
         """
         Iterates through all particle information and gets counts for every
         single cell 
         """
         def count(self):
-            num_parts = 10**7
+            num_parts = self.d
             self.data = self.reader.process(num_parts)
             while (len(self.data) > 0):
                 args0 = torch.tensor(np.array([self.data[i*6] for i in\
@@ -71,25 +74,27 @@ class hh:
                       
  
 if __name__ == "__main__":
-        hh1 = exact_hh(3)
+        d = 10**5; c = 10**7; r = 20; k = 100000
+        
+        hh1 = hh(3,d,c,r,k)
         hh1.count()
-        out = open("/srv/scratch1/millennium/exact_cells/cs_xvel_20bin", "w")
-        for cell in hh1.cs.getTopk():
-            out.write(str(cell[1]) + ',' + str(cell[0]) + '\n')
+        out = open("/srv/scratch1/millennium/exact_cells/cs_xvel_100k", "w")
+        for cell in hh1.cs.getTopk(500*500*500*20):
+            out.write(str(int(cell[1])) + ',' + str(int(cell[0])) + '\n')
         out.close()
- 
-        hh2 = exact_hh(4)
+''' 
+        hh2 = hh(4,d,c,r,k)
         hh2.count()
-        out = open("/srv/scratch1/millennium/exact_cells/cs_yvel_20bin", "w")
+        out = open("/srv/scratch1/millennium/exact_cells/cs_yvel_100k", "w")
         for cell in hh2.cs.getTopk():
-            out.write(str(cell[1]) + ',' + str(cell[0]) + '\n')
+            out.write(str(int(cell[1])) + ',' + str(int(cell[0])) + '\n')
         out.close()
         
-        hh3 = exact_hh(5)
+        hh3 = hh(5,d,c,r,k)
         hh3.count()
-        out = open("/srv/scratch1/millennium/exact_cells/cs_zvel_20bin", "w")
-        for cell in hh3.cs.gtTopk():
-            out.write(str(cell[1]) + ',' + str(cell[0]) + '\n')
+        out = open("/srv/scratch1/millennium/exact_cells/cs_zvel_100k", "w")
+        for cell in hh3.cs.getTopk():
+            out.write(str(int(cell[1])) + ',' + str(int(cell[0])) + '\n')
         out.close()
 
-
+'''

@@ -25,6 +25,7 @@ heaviest 100,000 cell positions.
 def position_cell_data(pos_file):
     heavy_cell_posfile = open(pos_file, "r")
     heavy_cells_pos = np.zeros(100000, dtype=np.int32)
+    heavy_cell_posfile.readline()
     i = 0
     for line in heavy_cell_posfile:
         inf = line.strip().split(',')
@@ -48,7 +49,9 @@ ID,[velocity histgram]) for all positions.
 
 """
 def velocity_cell_data(heavy_cells_pos, d):
-    heavy_cell_xfile = open("topk_exact/top100000_new_" + d + "vel_20bin.csv", "r")
+    #heavy_cell_xfile = open("topk_exact/top100000_new_xvel_20bin.csv", "r")
+    heavy_cell_xfile = open("top_tenk_CS/cs_" + d + "vel_100k", "r")
+    heavy_cell_xfile.readline()
     heavy_cells_x ={}
     for line in heavy_cell_xfile:
         inf = line.strip().split(',')
@@ -79,7 +82,7 @@ def velocity_cell_data(heavy_cells_pos, d):
                             # say is just the lowest point between i and j
                             idx = t
                             for q in range(t,j):
-                                if pos_cells_x[q] < pos_cells_x[idx]:
+                                if pos_cells_x[pid][q] < pos_cells_x[pid][idx]:
                                     idx = q
                             collocated_x[pid] = idx                      
                             break
@@ -97,47 +100,60 @@ def velocity_cell_data(heavy_cells_pos, d):
 """
 This function finds the particle counts per velocity peak of collocated halos.
 It takes the list of collocated position ID's and the dictionary of position
-ID's and velocity histogram data for any singular direction. It returns a
+ID's and velocity histogram data for any singular direction. I.e. it takes the 
+output of velocity_vell_data. It returns a
 dictionay of key value pair (postion ID, [particle count per peak])
 """
-def get_particle_counts(pos_cells, collocated_list, idcs):
+def get_particle_counts(collocated_list, idcs, pos_cells_x):
     counts = {}
     for pid in collocated_list:
         idx = idcs[pid]
         count1 = 0
         count2 = 0
         for i in range(0, idx):
-            count1 += pos_cells[pid][i]
+            count1 += pos_cells_x[pid][i]
         for i in range(idx, 20):
-            count2 +=1 pos_cells[pid][i]
+            count2 += pos_cells_x[pid][i]
         counts[pid] = [count1, count2]
         
     return counts
 
 
 if __name__ == "__main__":
-   
-    heavy_cells_pos = position_cell_data("topk_exact/top100000_new_pos_only.csv")
-    collocated_x_list, collocated_x_idcs, pos_cells_x = velocity_cell_data(true_halos, heavy_cells_pos, "x")
-    collocated_y_list, collocated_y_idcs, pos_cells_y = velocity_cell_data(true_halos, heavy_cells_pos, "y")
-    collocated_z_list, collocated_z_idcs, pos_cells_z = velocity_cell_data(true_halos, heavy_cells_pos, "z")
+    #heavy_cells_pos = position_cell_data("topk_exact/top100000_new_pos_only.csv")
+    heavy_cells_pos = position_cell_data("top_tenk_CS/cs_pos_100k")
+    collocated_x_list, collocated_x_idcs, pos_cells_x = velocity_cell_data(heavy_cells_pos, "x")
+    #collocated_y_list, collocated_y_idcs, pos_cells_y = velocity_cell_data(heavy_cells_pos, "y")
+    #collocated_z_list, collocated_z_idcs, pos_cells_z = velocity_cell_data(heavy_cells_pos, "z")
 
 
-    counts_x = get_particle_counts(pos_cells_x, collocated_x_list,
-                                   collocated_x_idcs)
-    counts_y = get_particle_counts(pos_cells_y, collocated_y_list,
-                                   collocated_y_idcs)
-    counts_z = get_particle_counts(pos_cells_z, collocated_z_list,
-                                   collocated_z_idcs)
+    counts_x = get_particle_counts(collocated_x_list, collocated_x_idcs,
+                                   pos_cells_x)
+    #counts_y = get_particle_counts(collocated_y_list, collocated_y_idcs,
+    #                               pos_cells_y)
+    #counts_z = get_particle_counts(collocated_z_list, collocated_z_idcs,
+    #                               pos_cells_z)
 
-    total_collocated_list = set(collocated_x_list) | set(collocated_y_list) | set(collocated_z_list)
+    total_collocated_list = set(collocated_x_list)# | set(collocated_y_list) | set(collocated_z_list)
     
 
-    # this will be a total file soon, but first I must search for particle
-    # counts
-    results = open("results/interesting_regions.csv", "w")
-    
+    results = open("results/cs_Xonly_interesting_regions_tenk.csv", "w")
+    results.write("position ID, count in first cluster, count in second" +
+                    "cluster, velocity direction of seperation\n")
+    # Note that we might have duplicated if it is seperable in multiple velocity
+    # directions. I am just going to say that we are okay with that
     for pid in total_collocated_list:
-        retsults.write("{}\n".format(fp))
-    fpFile.close()
+        #is it seperatd in the x direction of velocity?
+        if pid in collocated_x_list:
+            results.write("{},{},{},x\n".format(pid, counts_x[pid][0],
+                                                 counts_x[pid][1]))
+        #is it seperatd in the y direction of velocity?
+        #if pid in collocated_y_list:
+        #    results.write("{},{},{},y\n".format(pid, counts_y[pid][0],
+        #                                         counts_y[pid][1]))
+        #is it seperatd in the z direction of velocity?
+        #if pid in collocated_z_list:
+        #    results.write("{},{},{},z\n".format(pid, counts_z[pid][0],
+        #                                         counts_z[pid][1]))
+
 

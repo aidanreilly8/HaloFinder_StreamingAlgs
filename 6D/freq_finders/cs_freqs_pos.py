@@ -33,7 +33,7 @@ class hh:
         object. 
         """
         def count(self):
-            num_parts = d
+            num_parts = self.d
             self.data = self.reader.process(num_parts)
             while (len(self.data) > 0):
                 args0 = torch.tensor(np.array([self.data[i*6] for i in\
@@ -52,8 +52,6 @@ class hh:
                 
                                 
                 keys = (args0.add(args1)).add(args2)
-                # get rid of overly high or low velocities send them all to the
-                # cell with key_id = 0
                 self.cs.accumulateVec(keys)
 
                 self.data = self.reader.process(num_parts)
@@ -61,11 +59,11 @@ class hh:
                       
  
 if __name__ == "__main__":
-        d = 10**7; c = 10**3; r = 5; k = 100000
+        d = 10**5; c = 10**7; r = 20; k = 100000
         hh1 = hh(d,c,r,k)
         hh1.count()
-        out = open("/srv/scratch1/millennium/exact_cells/cs_pos_20bin", "w")
+        out = open("/srv/scratch1/millennium/exact_cells/cs_pos_100k", "w")
         for cell in hh1.cs.getTopk():
-            out.write(str(cell[1]) + ',' + str(cell[0]) + '\n')
+            out.write(str(int(cell[1])) + ',' + str(int(cell[0])) + '\n')
         out.close()
 
